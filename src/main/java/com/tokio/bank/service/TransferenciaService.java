@@ -5,6 +5,7 @@ import com.tokio.bank.model.enums.TaxaEnum;
 import com.tokio.bank.repository.TransferenciaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.util.List;
 public class TransferenciaService {
     private final TransferenciaRepository repository;
 
+    @Transactional
     public Transferencia agendarTransferencia(Transferencia transferencia) {
         long dias = ChronoUnit.DAYS.between(LocalDate.now(), transferencia.getDataTransferencia());
         TaxaEnum taxaEnum = TaxaEnum.obterPorDias(dias);
@@ -25,6 +27,7 @@ public class TransferenciaService {
         return repository.save(transferencia);
     }
 
+    @Transactional(readOnly = true)
     public List<Transferencia> listarAgendamentos() {
         return repository.findAll();
     }
