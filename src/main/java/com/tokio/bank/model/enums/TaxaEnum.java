@@ -1,6 +1,9 @@
 package com.tokio.bank.model.enums;
 
+import com.tokio.bank.excepion.TaxaInvalidaException;
+
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 public enum TaxaEnum {
     A(0, 0, new BigDecimal("3.00"), new BigDecimal("0.025")),
@@ -20,5 +23,16 @@ public enum TaxaEnum {
         this.diasMax = diasMax;
         this.taxaFixa = taxaFixa;
         this.taxaPercentual = taxaPercentual;
+    }
+
+    public BigDecimal calcularTaxa(BigDecimal valor) {
+        return taxaFixa.add(valor.multiply(taxaPercentual));
+    }
+
+    public static TaxaEnum obterPorDias(long dias) {
+        return Arrays.stream(values())
+                .filter(taxa -> dias >= taxa.diasMin && dias <= taxa.diasMax)
+                .findFirst()
+                .orElseThrow(() -> new TaxaInvalidaException("Taxa não aplicável para essa data de transferência"));
     }
 }
